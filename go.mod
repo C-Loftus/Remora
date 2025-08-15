@@ -7,11 +7,14 @@ toolchain go1.24.5
 require (
 	github.com/c-loftus/orca-controller v0.0.0-20250727151856-b445746eb976
 	github.com/charmbracelet/log v0.4.2
+	github.com/diamondburned/gotk4/pkg v0.3.1
 	github.com/kbinani/screenshot v0.0.0-20250624051815-089614a94018
+	github.com/ollama/ollama v0.11.4
 	golang.design/x/hotkey v0.4.1
 )
 
 require (
+	github.com/KarpelesLab/weak v0.1.1 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/colorprofile v0.2.3-0.20250311203215-f60798e515dc // indirect
 	github.com/charmbracelet/lipgloss v1.1.0 // indirect
@@ -27,10 +30,11 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/muesli/termenv v0.16.0 // indirect
-	github.com/ollama/ollama v0.11.4 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	go4.org/unsafe/assume-no-moving-gc v0.0.0-20231121144256-b99613f794b6 // indirect
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/exp v0.0.0-20250218142911-aa4b98e5adaa // indirect
+	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 )
