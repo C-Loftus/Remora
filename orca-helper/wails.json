@@ -1,0 +1,13 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "orca-helper",
+  "outputfilename": "orca-helper",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Colton Loftus",
+    "email": "70598503+C-Loftus@users.noreply.github.com"
+  }
+}
