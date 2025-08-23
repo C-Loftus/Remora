@@ -1,28 +1,42 @@
-import {useEffect, useState} from 'react';
-import logo from './assets/images/logo-universal.png';
+import { useEffect, useState } from 'react';
 import './App.css';
-import {ConnectedToOrca, TryCreateClient} from "../wailsjs/go/main/App";
+import { ConnectionStatus } from "../wailsjs/go/main/App";
 
 function App() {
   const [connected, setConnected] = useState(false);
   const [connectedMessage, setConnectedMessage] = useState('');
 
   useEffect(() => {
-    // Run once on startup
-    TryCreateClient().then(res => setConnectedMessage(res));
+    let isMounted = true;
 
-    // Poll every 5 seconds
-    const interval = setInterval(() => {
-      ConnectedToOrca().then(res => setConnected(res));
-    }, 5000);
+    async function fetchStatus() {
+      try {
+        const status = await ConnectionStatus();
+        if (!isMounted) return;
 
-    // Cleanup
-    return () => clearInterval(interval);
+        setConnected(status.ConnectedToOrca);
+        setConnectedMessage(status.ConnectionMessage);
+      } catch (err) {
+        console.error("Error fetching connection status:", err);
+        if (isMounted) {
+          setConnected(false);
+          setConnectedMessage("Error connecting to Orca");
+        }
+      }
+    }
+
+    fetchStatus();
+
+    const interval = setInterval(fetchStatus, 1000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, []);
 
   return (
     <div id="App">
-      <img src={logo} id="logo" alt="logo"/>
       <h1>Orca Helper</h1>
       <div className="result">
         {connected ? 'Connected to Orca' : 'Not connected to Orca'}

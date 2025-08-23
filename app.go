@@ -2,20 +2,34 @@ package main
 
 import (
 	"context"
-	"fmt"
 
 	oc "github.com/c-loftus/orca-controller"
 )
 
+type Connection struct {
+	ConnectedToOrca   bool
+	ConnectionMessage string
+	OrcaClient        *oc.OrcaClient
+}
+
+func (a *Connection) Reset() {
+	a.ConnectedToOrca = false
+	a.ConnectionMessage = ""
+	if a.OrcaClient != nil {
+		a.OrcaClient.Close()
+	}
+	a.OrcaClient = nil
+}
+
 // App struct
 type App struct {
-	ctx        context.Context
-	orcaClient *oc.OrcaClient
+	ctx            context.Context
+	orcaConnection Connection
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+	return &App{orcaConnection: Connection{}}
 }
 
 // startup is called when the app starts. The context is saved
@@ -24,33 +38,45 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) TryCreateClient() string {
+func (a *App) TryCreateClient() {
+	if a.orcaConnection.OrcaClient != nil {
+		version, err := a.orcaConnection.OrcaClient.GetVersion()
+		if err == nil {
+			a.orcaConnection.ConnectedToOrca = true
+			a.orcaConnection.ConnectionMessage = version
+			return
+		}
+	}
+
+	if a.orcaConnection.ConnectedToOrca {
+		return
+	}
+
+	a.orcaConnection.Reset()
+
 	client, err := oc.NewOrcaClient()
 	if err == nil {
-		a.orcaClient = client
-		version, err := a.orcaClient.GetVersion()
+		a.orcaConnection.OrcaClient = client
+		_, err := a.orcaConnection.OrcaClient.GetVersion()
 		if err == nil {
-			return fmt.Sprintf("Connected to Orca %s", version)
+			return
 		} else {
-			a.orcaClient = nil
-			return err.Error()
+			a.orcaConnection.ConnectionMessage = err.Error()
 		}
 	} else {
-		a.orcaClient = nil
-		return err.Error()
+		a.orcaConnection.ConnectionMessage = err.Error()
+		return
 	}
 }
 
-// Greet returns a greeting for the given name
 func (a *App) OrcaVersion(name string) (string, error) {
-	return a.orcaClient.GetVersion()
+	if a.orcaConnection.OrcaClient == nil {
+		return a.orcaConnection.OrcaClient.GetVersion()
+	} else {
+		return "Not connected to Orca", nil
+	}
 }
 
-// ClientConnected returns true if the client is connected to Orca
-func (a *App) ConnectedToOrca() bool {
-	return a.orcaClient != nil
-}
-
-func (a *App) TakeScreenshot() (string, error) {
-	return takeScreenshot()
+func (a *App) ConnectionStatus() Connection {
+	return a.orcaConnection
 }

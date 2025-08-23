@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/ollama/ollama/api"
@@ -213,6 +214,13 @@ func main() {
 
 	// Create an instance of the app structure
 	app := NewApp()
+
+	go func() {
+		for {
+			time.Sleep(1 * time.Second)
+			app.TryCreateClient()
+		}
+	}()
 
 	// Create application with options
 	err = wails.Run(&options.App{
