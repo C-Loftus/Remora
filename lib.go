@@ -7,9 +7,9 @@ import (
 	"time"
 
 	oc "github.com/c-loftus/orca-controller"
+	"github.com/kbinani/screenshot"
 
 	"github.com/charmbracelet/log"
-	"github.com/kbinani/screenshot"
 )
 
 func createClient() *oc.OrcaClient {
