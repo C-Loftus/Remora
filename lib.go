@@ -1,13 +1,19 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"image/png"
 	"os"
+	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
 	oc "github.com/c-loftus/orca-controller"
+	"github.com/jezek/xgb"
+	"github.com/jezek/xgb/xproto"
 	"github.com/kbinani/screenshot"
 	"github.com/ollama/ollama/api"
 
@@ -123,4 +129,109 @@ func takeScreenshot() (string, error) {
 	}
 
 	return file.Name(), nil
+}
+
+var (
+	disabled        bool
+	savedBrightness int
+	overlayWindow   xproto.Window
+	xConn           *xgb.Conn
+)
+
+func getBrightness() (int, error) {
+	out, err := exec.Command("ddcutil", "getvcp", "0x10").Output()
+	if err != nil {
+		return 0, err
+	}
+
+	text := string(bytes.TrimSpace(out))
+	idx := strings.Index(text, "current value =")
+	if idx < 0 {
+		return 0, fmt.Errorf("could not find current value in: %s", text)
+	}
+
+	rest := text[idx+len("current value ="):]
+	parts := strings.Split(rest, ",")
+	val, err := strconv.Atoi(strings.TrimSpace(parts[0]))
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse brightness: %w", err)
+	}
+
+	return val, nil
+}
+
+func setBrightness(value int) error {
+	cmd := exec.Command("ddcutil", "setvcp", "0x10", strconv.Itoa(value))
+	return cmd.Run()
+}
+
+func createOverlay(X *xgb.Conn) (xproto.Window, error) {
+	setup := xproto.Setup(X)
+	screen := setup.DefaultScreen(X)
+
+	win, err := xproto.NewWindowId(X)
+	if err != nil {
+		return 0, err
+	}
+
+	xproto.CreateWindow(
+		X,
+		screen.RootDepth,
+		win,
+		screen.Root,
+		0, 0,
+		screen.WidthInPixels,
+		screen.HeightInPixels,
+		0,
+		xproto.WindowClassInputOutput,
+		screen.RootVisual,
+		xproto.CwBackPixel|xproto.CwOverrideRedirect,
+		[]uint32{0, 1}, // black background, override redirect
+	)
+	xproto.MapWindow(X, win)
+
+	return win, nil
+}
+
+func toggleScreenCurtain() error {
+	if !disabled {
+		// Enable screen curtain
+		log.Info("Enabling screen curtain")
+
+		brightness, err := getBrightness()
+		if err != nil {
+			return err
+		}
+		savedBrightness = brightness
+		if err := setBrightness(0); err != nil {
+			return err
+		}
+
+		X, err := xgb.NewConn()
+		if err != nil {
+			return err
+		}
+		win, err := createOverlay(X)
+		if err != nil {
+			return err
+		}
+
+		overlayWindow = win
+		xConn = X
+		disabled = true
+	} else {
+		// Disable screen curtain
+		log.Info("Disabling screen curtain")
+
+		if xConn != nil {
+			xproto.DestroyWindow(xConn, overlayWindow)
+			xConn.Close()
+			xConn = nil
+		}
+		if err := setBrightness(savedBrightness); err != nil {
+			return err
+		}
+		disabled = false
+	}
+	return nil
 }

@@ -86,6 +86,26 @@ var hotkeyList = []HotkeyWithMetadata{
 		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
 		functionToRun: takeScreenshotAndSendToLlm,
 	},
+	{
+		effect:       "screen curtain",
+		keysAsString: "Ctrl+Shift+F7",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF7),
+		functionToRun: func(client *oc.OrcaClient) error {
+			if disabled {
+				err := client.PresentMessage("Disabling screen curtain")
+				if err != nil {
+					return err
+				}
+			} else {
+				err := client.PresentMessage("Enabling screen curtain")
+				if err != nil {
+					return err
+				}
+			}
+
+			return toggleScreenCurtain()
+		},
+	},
 }
 
 func handleKeys(app *App) error {
