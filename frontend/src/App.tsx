@@ -128,14 +128,17 @@ function App() {
           ollamaStatusMessage
         }
       </p>
-      {ollamaStatusMessage !== null && (
+      <p>
+          {lastOllamaResponse}
+      </p>
+      {(lastOllamaResponse && (
         <>
         <h3>Last Ollama Response </h3>
         <p>
           {lastOllamaResponse}
         </p>
         </>
-      )}
+      ))}
     </div>
   );
 }

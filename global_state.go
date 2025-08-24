@@ -83,4 +83,20 @@ var hotkeyList = []HotkeyWithMetadata{
 			return toggleScreenCurtain()
 		},
 	},
+	{
+		effect:       "toggle verbosity",
+		keysAsString: "Ctrl+Shift+F6",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF6),
+		functionToRun: func(client *oc.OrcaClient) error {
+			return client.SpeechAndVerbosityManager.ToggleVerbosity(true)
+		},
+	},
+	{
+		effect:       "summarize screen",
+		keysAsString: "Ctrl+Shift+F5",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF5),
+		functionToRun: func(client *oc.OrcaClient) error {
+			return client.FlatReviewPresenter.ShowContents(true)
+		},
+	},
 }
