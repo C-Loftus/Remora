@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function ConnectionStatus():Promise<main.Connection>;
 
+export function GetHotKeys():Promise<Array<main.HotkeyWithMetadata>>;
+
 export function OrcaVersion(arg1:string):Promise<string>;
 
-export function TryCreateClient():Promise<void>;
+export function TryCreateClient():Promise<boolean>;

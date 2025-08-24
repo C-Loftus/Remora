@@ -6,6 +6,10 @@ export function ConnectionStatus() {
   return window['go']['main']['App']['ConnectionStatus']();
 }
 
+export function GetHotKeys() {
+  return window['go']['main']['App']['GetHotKeys']();
+}
+
 export function OrcaVersion(arg1) {
   return window['go']['main']['App']['OrcaVersion'](arg1);
 }

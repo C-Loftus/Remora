@@ -38,18 +38,14 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) TryCreateClient() {
+func (a *App) TryCreateClient() (success bool) {
 	if a.orcaConnection.OrcaClient != nil {
 		version, err := a.orcaConnection.OrcaClient.GetVersion()
 		if err == nil {
 			a.orcaConnection.ConnectedToOrca = true
 			a.orcaConnection.ConnectionMessage = version
-			return
+			return true
 		}
-	}
-
-	if a.orcaConnection.ConnectedToOrca {
-		return
 	}
 
 	a.orcaConnection.Reset()
@@ -59,13 +55,14 @@ func (a *App) TryCreateClient() {
 		a.orcaConnection.OrcaClient = client
 		_, err := a.orcaConnection.OrcaClient.GetVersion()
 		if err == nil {
-			return
+			return true
 		} else {
 			a.orcaConnection.ConnectionMessage = err.Error()
+			return false
 		}
 	} else {
 		a.orcaConnection.ConnectionMessage = err.Error()
-		return
+		return false
 	}
 }
 
@@ -79,4 +76,8 @@ func (a *App) OrcaVersion(name string) (string, error) {
 
 func (a *App) ConnectionStatus() Connection {
 	return a.orcaConnection
+}
+
+func (a *App) GetHotKeys() []HotkeyWithMetadata {
+	return hotkeyList
 }

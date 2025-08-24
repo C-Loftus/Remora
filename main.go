@@ -3,10 +3,10 @@ package main
 import (
 	"context"
 	"embed"
-	"fmt"
-	"os"
+	"sync/atomic"
 	"time"
 
+	oc "github.com/c-loftus/orca-controller"
 	"github.com/charmbracelet/log"
 	"github.com/ollama/ollama/api"
 	"github.com/wailsapp/wails/v2"
@@ -18,161 +18,79 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-func handleKeys() error {
+type HotkeyWithMetadata struct {
+	effect        string
+	keysAsString  string
+	hotkey        *hotkey.Hotkey
+	functionToRun func(*oc.OrcaClient) error
+}
 
-	client := createClient()
-
-	lowerSpeed := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF11)
-	err := lowerSpeed.Register()
-	if err != nil {
-		log.Fatalf("hotkey: failed to register hotkey: %v", err)
-		return err
+func NewHotkeyWithMetadata(effect string, keysAsString string, modifiers []hotkey.Modifier, key hotkey.Key) *HotkeyWithMetadata {
+	return &HotkeyWithMetadata{
+		hotkey:       hotkey.New(modifiers, key),
+		effect:       effect,
+		keysAsString: keysAsString,
 	}
+}
 
-	raiseSpeed := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF12)
-	err = raiseSpeed.Register()
-	if err != nil {
-		log.Fatalf("hotkey: failed to register hotkey: %v", err)
-		return err
-	}
-
-	changeVerbosity := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF10)
-	err = changeVerbosity.Register()
-	if err != nil {
-		log.Fatalf("hotkey: failed to register hotkey: %v", err)
-		return err
-	}
-
-	toggleSpeech := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF8)
-	err = toggleSpeech.Register()
-	if err != nil {
-		log.Fatalf("hotkey: failed to register hotkey: %v", err)
-		return err
-	}
-
-	processScreenshot := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9)
-	err = processScreenshot.Register()
-	if err != nil {
-		log.Fatalf("hotkey: failed to register hotkey: %v", err)
-		return err
-	}
-
-	for {
-		select {
-
-		case <-toggleSpeech.Keydown():
-			err := client.SpeechAndVerbosityManager.ToggleSpeech(true)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-
-		case <-processScreenshot.Keydown():
-			name, err := takeScreenshot()
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			err = client.PresentMessage("Screenshot taken")
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			ollamaClient, err := api.ClientFromEnvironment()
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			asBytes, err := os.ReadFile(name)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-
-			messages := api.Message{
-				Role:   "user",
-				Images: []api.ImageData{asBytes},
-			}
-
-			chatReq := api.ChatRequest{
-				Model: "qwen2.5vl",
-				Messages: []api.Message{
-					messages,
-				},
-			}
-			var allContent string
-			respFunc := func(resp api.ChatResponse) error {
-				allContent += resp.Message.Content
-				return nil
-			}
-			client.PresentMessage("Processing screenshot...")
-			log.Info("Processing screenshot...")
-			if err := ollamaClient.Chat(context.Background(), &chatReq, respFunc); err != nil {
-				log.Error(err)
-				continue
-			}
-			log.Info(allContent)
-
-			err = client.PresentMessage(allContent)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			err = os.Remove(name)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-		case <-raiseSpeed.Keydown():
-
+var hotkeyList = []HotkeyWithMetadata{
+	{
+		effect:       "lower speed",
+		keysAsString: "Ctrl+Shift+F11",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF11),
+	},
+	{
+		effect:       "raise speed",
+		keysAsString: "Ctrl+Shift+F12",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF12),
+	},
+	{
+		effect:       "change verbosity",
+		keysAsString: "Ctrl+Shift+F10",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF10),
+	},
+	{
+		effect:       "toggle speech",
+		keysAsString: "Ctrl+Shift+F8",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF8),
+		functionToRun: func(client *oc.OrcaClient) error {
 			err := client.SpeechAndVerbosityManager.InterruptSpeech(true)
 			if err != nil {
-				log.Error(err)
-				continue
+				return err
 			}
-			err = client.SpeechAndVerbosityManager.SetRate(100)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			rate, err := client.SpeechAndVerbosityManager.Rate()
-			log.Info("Increased rate to " + fmt.Sprint(rate))
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			err = client.PresentMessage("Rate " + fmt.Sprint(rate))
-			if err != nil {
-				log.Error(err)
-				continue
-			}
+			return client.SpeechAndVerbosityManager.ToggleSpeech(true)
+		},
+	},
+	{
+		effect:        "toggle chat",
+		keysAsString:  "Ctrl+Shift+F9",
+		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
+		functionToRun: takeScreenshotAndSendToLlm,
+	},
+}
 
-		case <-changeVerbosity.Keydown():
+func handleKeys(app *App) error {
 
-			err := client.SpeechAndVerbosityManager.ToggleVerbosity(true)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-		case <-lowerSpeed.Keydown():
-			err := client.SpeechAndVerbosityManager.SetRate(25)
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			rate, err := client.SpeechAndVerbosityManager.Rate()
-			if err != nil {
-				log.Error(err)
-				continue
-			}
-			log.Info("Decreased rate to " + fmt.Sprint(rate))
-			err = client.PresentMessage("Rate " + fmt.Sprint(rate))
-			if err != nil {
-				log.Error(err)
-				continue
-			}
+	for _, hotkey := range hotkeyList {
+		if err := hotkey.hotkey.Register(); err != nil {
+			return err
 		}
+		// spin off a goroutine for each hotkey listener
+		go func(hk HotkeyWithMetadata, client *oc.OrcaClient) {
+			log.Info("hotkey registered", "effect", hk.effect, "keys", hk.keysAsString)
+			for range hk.hotkey.Keydown() {
+				if hk.functionToRun != nil {
+					err := hk.functionToRun(client)
+					if err != nil {
+						log.Error(err)
+					}
+				}
+			}
+		}(hotkey, app.orcaConnection.OrcaClient)
 	}
+
+	// block forever so goroutines keep running
+	select {}
 }
 
 func main() {
@@ -215,11 +133,26 @@ func main() {
 	// Create an instance of the app structure
 	app := NewApp()
 
+	var clientCreated atomic.Bool
+
 	go func() {
 		for {
 			time.Sleep(1 * time.Second)
-			app.TryCreateClient()
+			success := app.TryCreateClient()
+			if success {
+				clientCreated.Store(true)
+			}
 		}
+	}()
+
+	go func() {
+		for {
+			if clientCreated.Load() {
+				break
+			}
+			time.Sleep(1 * time.Second)
+		}
+		err = handleKeys(app)
 	}()
 
 	// Create application with options
@@ -240,11 +173,6 @@ func main() {
 	if err != nil {
 		println("Error:", err.Error())
 	}
-
-	go func() {
-		err = handleKeys()
-
-	}()
 
 	if err != nil {
 		log.Fatal(err)
