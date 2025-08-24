@@ -4,7 +4,7 @@ import {main} from '../models';
 
 export function ConnectionStatus():Promise<main.Connection>;
 
-export function GetHotKeys():Promise<Array<main.HotkeyWithMetadata>>;
+export function GetHotKeys():Promise<Array<string>>;
 
 export function OrcaVersion(arg1:string):Promise<string>;
 

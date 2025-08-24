@@ -78,6 +78,10 @@ func (a *App) ConnectionStatus() Connection {
 	return a.orcaConnection
 }
 
-func (a *App) GetHotKeys() []HotkeyWithMetadata {
-	return hotkeyList
+func (a *App) GetHotKeys() []string {
+	var hotkeys []string
+	for _, hotkey := range hotkeyList {
+		hotkeys = append(hotkeys, hotkey.ToString())
+	}
+	return hotkeys
 }

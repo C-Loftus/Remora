@@ -34,18 +34,6 @@ export namespace main {
 		    return a;
 		}
 	}
-	export class HotkeyWithMetadata {
-	
-	
-	    static createFrom(source: any = {}) {
-	        return new HotkeyWithMetadata(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	
-	    }
-	}
 
 }
 

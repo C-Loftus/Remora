@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"embed"
+	"fmt"
 	"sync/atomic"
 	"time"
 
@@ -25,6 +26,10 @@ type HotkeyWithMetadata struct {
 	functionToRun func(*oc.OrcaClient) error
 }
 
+func (h *HotkeyWithMetadata) ToString() string {
+	return fmt.Sprintf("%s: %s", h.effect, h.keysAsString)
+}
+
 func NewHotkeyWithMetadata(effect string, keysAsString string, modifiers []hotkey.Modifier, key hotkey.Key) *HotkeyWithMetadata {
 	return &HotkeyWithMetadata{
 		hotkey:       hotkey.New(modifiers, key),
@@ -35,14 +40,28 @@ func NewHotkeyWithMetadata(effect string, keysAsString string, modifiers []hotke
 
 var hotkeyList = []HotkeyWithMetadata{
 	{
-		effect:       "lower speed",
+		effect:       "slow speed",
 		keysAsString: "Ctrl+Shift+F11",
 		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF11),
+		functionToRun: func(client *oc.OrcaClient) error {
+			err := client.PresentMessage("Slow speed")
+			if err != nil {
+				return err
+			}
+			return client.SpeechAndVerbosityManager.SetRate(20)
+		},
 	},
 	{
-		effect:       "raise speed",
+		effect:       "fast speed",
 		keysAsString: "Ctrl+Shift+F12",
 		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF12),
+		functionToRun: func(client *oc.OrcaClient) error {
+			err := client.PresentMessage("Fast speed")
+			if err != nil {
+				return err
+			}
+			return client.SpeechAndVerbosityManager.SetRate(100)
+		},
 	},
 	{
 		effect:       "change verbosity",
@@ -93,16 +112,15 @@ func handleKeys(app *App) error {
 	select {}
 }
 
-func main() {
-
+func setupOllama() error {
 	ollamaClient, err := api.ClientFromEnvironment()
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	models, err := ollamaClient.List(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	var foundQwen bool
 	for _, model := range models.Models {
@@ -122,12 +140,16 @@ func main() {
 			return nil
 		}
 
-		err = ollamaClient.Pull(context.Background(), req, progressFunc)
-		if err != nil {
-			log.Fatal(err)
-		}
-	} else {
-		log.Info("qwen2.5vl vision model found; skipping pull")
+		return ollamaClient.Pull(context.Background(), req, progressFunc)
+	}
+	log.Info("qwen2.5vl vision model found; skipping pull")
+	return nil
+}
+
+func main() {
+
+	if err := setupOllama(); err != nil {
+		log.Fatal(err)
 	}
 
 	// Create an instance of the app structure
@@ -152,11 +174,14 @@ func main() {
 			}
 			time.Sleep(1 * time.Second)
 		}
-		err = handleKeys(app)
+		err := handleKeys(app)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}()
 
 	// Create application with options
-	err = wails.Run(&options.App{
+	err := wails.Run(&options.App{
 		Title:  "orca-helper",
 		Width:  1024,
 		Height: 768,

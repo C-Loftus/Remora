@@ -7,7 +7,7 @@ function App() {
   const [connected, setConnected] = useState(false);
   const [connectedMessage, setConnectedMessage] = useState('');
 
-  const [hotkeys, setHotkeys] = useState<Array<main.HotkeyWithMetadata>>  ([]);
+  const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -61,11 +61,10 @@ function App() {
       </p>
       <h2> Keyboard Shortcuts </h2>
       <ul>
-        {hotkeys.map((hotkey: main.HotkeyWithMetadata) => (
-          // JSON SERIALIZED HOTKEY
-          <p key={Math.random()}>
-            {Object.keys(hotkey)}
-          </p>
+        {hotkeys.map((hotkey) => (
+          <li key={hotkey}>
+            {hotkey}
+          </li>
         ))}
       </ul>
     </div>
