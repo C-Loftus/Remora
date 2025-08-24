@@ -105,8 +105,8 @@ function App() {
         </tbody>
       </table>
       ) : (
-        <p className="result">
-          Your system is running Wayland but Wayland does not support global keyboard shortcuts. Please switch to X11 for keyboard shortcuts to work.
+        <p>
+          Error: Your system is running Wayland but Wayland does not support global keyboard shortcuts. Please switch to X11 for keyboard shortcuts to work.
         </p>
       )}
       <h2> Ollama </h2>

@@ -97,11 +97,11 @@ func (a *App) OllamaConnectionStatus() string {
 	if err != nil {
 		return "Error connecting to Ollama: " + err.Error()
 	}
-	version, err := client.Version(context.Background())
-	if err != nil {
+	_, err = client.Version(context.Background())
+	if err != nil {	
 		return "Error connecting to Ollama: " + err.Error()
 	}
-	return version
+	return "Connected"
 }
 
 func (a *App) SetPrompt(prompt string) {
