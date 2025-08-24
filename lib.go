@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"image/png"
 	"os"
 	"time"
@@ -85,9 +84,7 @@ func takeScreenshot() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	fileName := fmt.Sprintf("%d_%dx%d.png", activeDisplayIndex, bounds.Dx(), bounds.Dy())
-
-	file, err := os.CreateTemp("", fileName)
+	file, err := os.CreateTemp("", "")
 	if err != nil {
 		return "", err
 	}
@@ -96,5 +93,5 @@ func takeScreenshot() (string, error) {
 		return "", err
 	}
 
-	return fileName, nil
+	return file.Name(), nil
 }
