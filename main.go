@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"embed"
-	"fmt"
 	"sync/atomic"
 	"time"
 
@@ -13,100 +12,10 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
-	"golang.design/x/hotkey"
 )
 
 //go:embed all:frontend/dist
 var assets embed.FS
-
-type HotkeyWithMetadata struct {
-	effect        string
-	keysAsString  string
-	hotkey        *hotkey.Hotkey
-	functionToRun func(*oc.OrcaClient) error
-}
-
-func (h *HotkeyWithMetadata) ToString() string {
-	return fmt.Sprintf("%s: %s", h.effect, h.keysAsString)
-}
-
-func NewHotkeyWithMetadata(effect string, keysAsString string, modifiers []hotkey.Modifier, key hotkey.Key) *HotkeyWithMetadata {
-	return &HotkeyWithMetadata{
-		hotkey:       hotkey.New(modifiers, key),
-		effect:       effect,
-		keysAsString: keysAsString,
-	}
-}
-
-var hotkeyList = []HotkeyWithMetadata{
-	{
-		effect:       "slow speed",
-		keysAsString: "Ctrl+Shift+F11",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF11),
-		functionToRun: func(client *oc.OrcaClient) error {
-			err := client.PresentMessage("Slow speed")
-			if err != nil {
-				return err
-			}
-			return client.SpeechAndVerbosityManager.SetRate(20)
-		},
-	},
-	{
-		effect:       "fast speed",
-		keysAsString: "Ctrl+Shift+F12",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF12),
-		functionToRun: func(client *oc.OrcaClient) error {
-			err := client.PresentMessage("Fast speed")
-			if err != nil {
-				return err
-			}
-			return client.SpeechAndVerbosityManager.SetRate(100)
-		},
-	},
-	{
-		effect:       "change verbosity",
-		keysAsString: "Ctrl+Shift+F10",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF10),
-	},
-	{
-		effect:       "toggle speech",
-		keysAsString: "Ctrl+Shift+F8",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF8),
-		functionToRun: func(client *oc.OrcaClient) error {
-			err := client.SpeechAndVerbosityManager.InterruptSpeech(true)
-			if err != nil {
-				return err
-			}
-			return client.SpeechAndVerbosityManager.ToggleSpeech(true)
-		},
-	},
-	{
-		effect:        "describe screen",
-		keysAsString:  "Ctrl+Shift+F9",
-		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
-		functionToRun: takeScreenshotAndSendToLlm,
-	},
-	{
-		effect:       "screen curtain",
-		keysAsString: "Ctrl+Shift+F7",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF7),
-		functionToRun: func(client *oc.OrcaClient) error {
-			if disabled {
-				err := client.PresentMessage("Disabling screen curtain")
-				if err != nil {
-					return err
-				}
-			} else {
-				err := client.PresentMessage("Enabling screen curtain")
-				if err != nil {
-					return err
-				}
-			}
-
-			return toggleScreenCurtain()
-		},
-	},
-}
 
 func handleKeys(app *App) error {
 

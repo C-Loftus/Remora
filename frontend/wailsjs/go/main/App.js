@@ -14,6 +14,14 @@ export function GetHotKeys() {
   return window['go']['main']['App']['GetHotKeys']();
 }
 
+export function GetPrompt() {
+  return window['go']['main']['App']['GetPrompt']();
+}
+
+export function LastOllamaResponse() {
+  return window['go']['main']['App']['LastOllamaResponse']();
+}
+
 export function OllamaConnectionStatus() {
   return window['go']['main']['App']['OllamaConnectionStatus']();
 }

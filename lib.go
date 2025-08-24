@@ -20,13 +20,7 @@ import (
 	"github.com/charmbracelet/log"
 )
 
-type DisplayServerType string
 
-const (
-	Unknown DisplayServerType = "unknown"
-	Wayland DisplayServerType = "wayland"
-	X11     DisplayServerType = "x11"
-)
 
 // DetectDisplayServer returns "wayland", "x11", or "unknown".
 func DetectDisplayServer() DisplayServerType {
@@ -93,6 +87,8 @@ func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
 	}
 	log.Info(allContent)
 
+	mostRecentOllamaResponse = allContent
+
 	err = client.PresentMessage(allContent)
 	if err != nil {
 		return err
@@ -133,13 +129,6 @@ func takeScreenshot() (string, error) {
 
 	return file.Name(), nil
 }
-
-var (
-	disabled        bool
-	savedBrightness int
-	overlayWindow   xproto.Window
-	xConn           *xgb.Conn
-)
 
 func getBrightness() (int, error) {
 	out, err := exec.Command("ddcutil", "getvcp", "0x10").Output()
@@ -197,7 +186,7 @@ func createOverlay(X *xgb.Conn) (xproto.Window, error) {
 }
 
 func toggleScreenCurtain() error {
-	if !disabled {
+	if !screenCurtainEnabled {
 		// Enable screen curtain
 		log.Info("Enabling screen curtain")
 
@@ -221,7 +210,7 @@ func toggleScreenCurtain() error {
 
 		overlayWindow = win
 		xConn = X
-		disabled = true
+		screenCurtainEnabled = true
 	} else {
 		// Disable screen curtain
 		log.Info("Disabling screen curtain")
@@ -234,7 +223,7 @@ func toggleScreenCurtain() error {
 		if err := setBrightness(savedBrightness); err != nil {
 			return err
 		}
-		disabled = false
+		screenCurtainEnabled = false
 	}
 	return nil
 }

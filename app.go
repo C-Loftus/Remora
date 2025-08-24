@@ -98,7 +98,7 @@ func (a *App) OllamaConnectionStatus() string {
 		return "Error connecting to Ollama: " + err.Error()
 	}
 	_, err = client.Version(context.Background())
-	if err != nil {	
+	if err != nil {
 		return "Error connecting to Ollama: " + err.Error()
 	}
 	return "Connected"
@@ -106,4 +106,12 @@ func (a *App) OllamaConnectionStatus() string {
 
 func (a *App) SetPrompt(prompt string) {
 	a.visionModelPrompt = prompt
+}
+
+func (a *App) GetPrompt() string {
+	return a.visionModelPrompt
+}
+
+func (a *App) LastOllamaResponse() string {
+	return mostRecentOllamaResponse
 }

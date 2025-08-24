@@ -7,6 +7,7 @@ function App() {
   const [connectedMessage, setConnectedMessage] = useState('');
   const [displayServerType, setDisplayServerType] = useState("unknown");
   const [ollamaStatusMessage, setOllamaStatusMessage] = useState<string | null>(null);
+  const [lastOllamaMessage, setLastOllamaMessage] = useState<string | null>(null);
 
   const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
 
@@ -58,6 +59,17 @@ function App() {
         console.error("Error fetching ollama status message:", err);
         if (isMounted) {
           setOllamaStatusMessage("");
+        }
+      }
+
+      try {
+        const lastOllamaMessage = await OllamaConnectionStatus();
+        if (!isMounted) return;
+        setLastOllamaMessage(lastOllamaMessage);
+      } catch (err) {
+        console.error("Error fetching last ollama message:", err);
+        if (isMounted) {
+          setLastOllamaMessage("");
         }
       }
     }

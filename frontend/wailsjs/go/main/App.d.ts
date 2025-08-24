@@ -8,6 +8,10 @@ export function GetDisplayServerType():Promise<main.DisplayServerType>;
 
 export function GetHotKeys():Promise<Array<string>>;
 
+export function GetPrompt():Promise<string>;
+
+export function LastOllamaResponse():Promise<string>;
+
 export function OllamaConnectionStatus():Promise<string>;
 
 export function OrcaVersion(arg1:string):Promise<string>;
