@@ -88,10 +88,11 @@ func main() {
 
 	go func() {
 		for {
-			time.Sleep(1 * time.Second)
 			success := app.TryCreateClient()
 			if success {
 				clientCreated.Store(true)
+			} else {
+				time.Sleep(1 * time.Second)
 			}
 		}
 	}()
