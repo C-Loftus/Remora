@@ -14,8 +14,16 @@ export function GetHotKeys() {
   return window['go']['main']['App']['GetHotKeys']();
 }
 
+export function OllamaConnectionStatus() {
+  return window['go']['main']['App']['OllamaConnectionStatus']();
+}
+
 export function OrcaVersion(arg1) {
   return window['go']['main']['App']['OrcaVersion'](arg1);
+}
+
+export function SetPrompt(arg1) {
+  return window['go']['main']['App']['SetPrompt'](arg1);
 }
 
 export function TryCreateClient() {

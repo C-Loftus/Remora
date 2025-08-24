@@ -81,7 +81,7 @@ var hotkeyList = []HotkeyWithMetadata{
 		},
 	},
 	{
-		effect:        "toggle chat",
+		effect:        "describe screen",
 		keysAsString:  "Ctrl+Shift+F9",
 		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
 		functionToRun: takeScreenshotAndSendToLlm,
@@ -169,7 +169,7 @@ func setupOllama() error {
 func main() {
 
 	if err := setupOllama(); err != nil {
-		log.Fatal(err)
+		log.Errorf("failed to setup ollama: %v", err)
 	}
 
 	// Create an instance of the app structure
@@ -216,11 +216,6 @@ func main() {
 	})
 
 	if err != nil {
-		println("Error:", err.Error())
-	}
-
-	if err != nil {
 		log.Fatal(err)
 	}
-
 }

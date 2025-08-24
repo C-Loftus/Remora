@@ -83,7 +83,10 @@ func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
 		allContent += resp.Message.Content
 		return nil
 	}
-	client.PresentMessage("Processing screenshot...")
+	err = client.PresentMessage("Processing screenshot...")
+	if err != nil {
+		return err
+	}
 	log.Info("Processing screenshot...")
 	if err := ollamaClient.Chat(context.Background(), &chatReq, respFunc); err != nil {
 		return err

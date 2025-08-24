@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { ConnectionStatus, GetDisplayServerType, GetHotKeys } from "../wailsjs/go/main/App";
-import { main } from '../wailsjs/go/models';
+import { ConnectionStatus, GetDisplayServerType, GetHotKeys, OllamaConnectionStatus } from "../wailsjs/go/main/App";
 
 function App() {
   const [connected, setConnected] = useState(false);
   const [connectedMessage, setConnectedMessage] = useState('');
   const [displayServerType, setDisplayServerType] = useState("unknown");
+  const [ollamaStatusMessage, setOllamaStatusMessage] = useState<string | null>(null);
 
   const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
 
@@ -47,6 +47,17 @@ function App() {
         console.error("Error fetching display server type:", err);
         if (isMounted) {
           setDisplayServerType("unknown");
+        }
+      }
+
+      try {
+        const ollamaStatusMessage = await OllamaConnectionStatus();
+        if (!isMounted) return;
+        setOllamaStatusMessage(ollamaStatusMessage);
+      } catch (err) {
+        console.error("Error fetching ollama status message:", err);
+        if (isMounted) {
+          setOllamaStatusMessage("");
         }
       }
     }
@@ -98,7 +109,13 @@ function App() {
           Your system is running Wayland but Wayland does not support global keyboard shortcuts. Please switch to X11 for keyboard shortcuts to work.
         </p>
       )}
-      
+      <h2> Ollama </h2>
+      <p className="result">
+        {
+          (ollamaStatusMessage === null) ? "Not connected; please install Ollama and make sure it is running" : 
+          ollamaStatusMessage
+        }
+      </p>
     </div>
   );
 }

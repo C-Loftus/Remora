@@ -4,6 +4,7 @@ import (
 	"context"
 
 	oc "github.com/c-loftus/orca-controller"
+	"github.com/ollama/ollama/api"
 )
 
 type Connection struct {
@@ -23,8 +24,9 @@ func (a *Connection) Reset() {
 
 // App struct
 type App struct {
-	ctx            context.Context
-	orcaConnection Connection
+	ctx               context.Context
+	visionModelPrompt string
+	orcaConnection    Connection
 }
 
 // NewApp creates a new App application struct
@@ -88,4 +90,20 @@ func (a *App) GetHotKeys() []string {
 
 func (a *App) GetDisplayServerType() DisplayServerType {
 	return DetectDisplayServer()
+}
+
+func (a *App) OllamaConnectionStatus() string {
+	client, err := api.ClientFromEnvironment()
+	if err != nil {
+		return "Error connecting to Ollama: " + err.Error()
+	}
+	version, err := client.Version(context.Background())
+	if err != nil {
+		return "Error connecting to Ollama: " + err.Error()
+	}
+	return version
+}
+
+func (a *App) SetPrompt(prompt string) {
+	a.visionModelPrompt = prompt
 }
