@@ -8,8 +8,12 @@ body {
     margin: 0;
     color: white;
     font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        sans-serif;
+}
+
+a {
+    color: royalblue;
 }
 
 @font-face {
@@ -17,10 +21,57 @@ body {
     font-style: normal;
     font-weight: 400;
     src: local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
+        url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
 }
 
 #app {
     height: 100vh;
     text-align: center;
+}
+
+/* 🔥 Global focus style */
+*:focus {
+    outline: 4px solid yellow;
+    /* Thick yellow outline */
+    outline-offset: 4px;
+    /* Pushes outline away from element */
+}
+
+/* Big, consistent focus ring in WebKitGTK and others */
+*:focus {
+    outline: 4px auto -webkit-focus-ring-color !important;
+    outline-offset: 4px;
+}
+
+/* Also outline ancestors when something inside is focused */
+*:focus-within {
+    outline: 4px auto -webkit-focus-ring-color !important;
+    outline-offset: 4px;
+}
+
+/* Explicitly include common focusable elements (helps override UA styles) */
+a:focus,
+button:focus,
+input:focus,
+select:focus,
+textarea:focus,
+[tabindex]:focus {
+    outline: 4px auto -webkit-focus-ring-color !important;
+    outline-offset: 4px;
+}
+
+/* Fallback for engines that don't support the WebKit keyword */
+@supports not (outline: 4px auto -webkit-focus-ring-color) {
+
+    *:focus,
+    *:focus-within,
+    a:focus,
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus,
+    [tabindex]:focus {
+        outline: 4px solid #ff0 !important;
+        outline-offset: 4px;
+    }
 }

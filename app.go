@@ -85,3 +85,7 @@ func (a *App) GetHotKeys() []string {
 	}
 	return hotkeys
 }
+
+func (a *App) GetDisplayServerType() DisplayServerType {
+	return DetectDisplayServer()
+}

@@ -6,6 +6,10 @@ export function ConnectionStatus() {
   return window['go']['main']['App']['ConnectionStatus']();
 }
 
+export function GetDisplayServerType() {
+  return window['go']['main']['App']['GetDisplayServerType']();
+}
+
 export function GetHotKeys() {
   return window['go']['main']['App']['GetHotKeys']();
 }

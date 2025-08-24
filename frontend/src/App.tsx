@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { ConnectionStatus, GetHotKeys } from "../wailsjs/go/main/App";
+import { ConnectionStatus, GetDisplayServerType, GetHotKeys } from "../wailsjs/go/main/App";
 import { main } from '../wailsjs/go/models';
 
 function App() {
   const [connected, setConnected] = useState(false);
   const [connectedMessage, setConnectedMessage] = useState('');
+  const [displayServerType, setDisplayServerType] = useState("unknown");
 
   const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
 
@@ -37,6 +38,17 @@ function App() {
           setHotkeys([]);
         }
       }
+
+      try {
+        const displayServerType = await GetDisplayServerType();
+        if (!isMounted) return;
+        setDisplayServerType(displayServerType);
+      } catch (err) {
+        console.error("Error fetching display server type:", err);
+        if (isMounted) {
+          setDisplayServerType("unknown");
+        }
+      }
     }
 
     fetchStatus();
@@ -51,8 +63,9 @@ function App() {
 
   return (
     <div id="App">
-      <a href='https://github.com/C-Loftus/orca-helper'>github</a>
-      <h1>Orca Helper</h1>
+      <a href='https://github.com/C-Loftus/orca-helper' target="_blank">
+            <h1>Orca Helper</h1>
+      </a>
       <p className="result">
         {connected ? 'Connected to Orca' : 'Not connected to Orca'}
       </p>
@@ -60,13 +73,32 @@ function App() {
         {connectedMessage}
       </p>
       <h2> Keyboard Shortcuts </h2>
-      <ul>
-        {hotkeys.map((hotkey) => (
-          <li key={hotkey}>
-            {hotkey}
-          </li>
-        ))}
-      </ul>
+      {displayServerType === "x11" ? (
+      <table style={{margin: 'auto'}}>
+        <thead>
+          <tr>
+            <th style={{textAlign: 'center'}}>Description</th>
+            <th style={{textAlign: 'center'}}>Key</th>
+          </tr>
+        </thead>
+        <tbody>
+          {hotkeys.map((hotkey) => {
+            const [description, keyName] = hotkey.split(':');
+            return (
+              <tr key={hotkey}>
+                <td style={{textAlign: 'center'}}>{description}</td>
+                <td style={{textAlign: 'center'}}>{keyName}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      ) : (
+        <p className="result">
+          Your system is running Wayland but Wayland does not support global keyboard shortcuts. Please switch to X11 for keyboard shortcuts to work.
+        </p>
+      )}
+      
     </div>
   );
 }

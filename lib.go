@@ -4,6 +4,7 @@ import (
 	"context"
 	"image/png"
 	"os"
+	"strings"
 	"time"
 
 	oc "github.com/c-loftus/orca-controller"
@@ -12,6 +13,34 @@ import (
 
 	"github.com/charmbracelet/log"
 )
+
+type DisplayServerType string
+
+const (
+	Unknown DisplayServerType = "unknown"
+	Wayland DisplayServerType = "wayland"
+	X11     DisplayServerType = "x11"
+)
+
+// DetectDisplayServer returns "wayland", "x11", or "unknown".
+func DetectDisplayServer() DisplayServerType {
+	if os.Getenv("WAYLAND_DISPLAY") != "" {
+		return "wayland"
+	}
+	if os.Getenv("DISPLAY") != "" {
+		return "x11"
+	}
+
+	sessionType := strings.ToLower(os.Getenv("XDG_SESSION_TYPE"))
+	switch sessionType {
+	case "wayland":
+		return Wayland
+	case "x11":
+		return X11
+	default:
+		return Unknown
+	}
+}
 
 func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
 	name, err := takeScreenshot()
