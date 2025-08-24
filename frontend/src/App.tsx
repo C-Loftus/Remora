@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { ConnectionStatus, GetDisplayServerType, GetHotKeys, OllamaConnectionStatus } from "../wailsjs/go/main/App";
+import { ConnectionStatus, GetDisplayServerType, GetHotKeys, LastOllamaResponse, OllamaConnectionStatus } from "../wailsjs/go/main/App";
 
 function App() {
   const [connected, setConnected] = useState(false);
   const [connectedMessage, setConnectedMessage] = useState('');
   const [displayServerType, setDisplayServerType] = useState("unknown");
   const [ollamaStatusMessage, setOllamaStatusMessage] = useState<string | null>(null);
-  const [lastOllamaMessage, setLastOllamaMessage] = useState<string | null>(null);
+  const [lastOllamaResponse, setLastOllamaResponse] = useState<string | null>(null);
 
   const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
 
@@ -63,13 +63,13 @@ function App() {
       }
 
       try {
-        const lastOllamaMessage = await OllamaConnectionStatus();
+        const lastOllamaMessage = await LastOllamaResponse();
         if (!isMounted) return;
-        setLastOllamaMessage(lastOllamaMessage);
+        setLastOllamaResponse(lastOllamaMessage);
       } catch (err) {
         console.error("Error fetching last ollama message:", err);
         if (isMounted) {
-          setLastOllamaMessage("");
+          setLastOllamaResponse("");
         }
       }
     }
@@ -128,6 +128,14 @@ function App() {
           ollamaStatusMessage
         }
       </p>
+      {ollamaStatusMessage !== null && (
+        <>
+        <h3>Last Ollama Response </h3>
+        <p>
+          {lastOllamaResponse}
+        </p>
+        </>
+      )}
     </div>
   );
 }
