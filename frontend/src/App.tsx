@@ -128,9 +128,6 @@ function App() {
           ollamaStatusMessage
         }
       </p>
-      <p>
-          {lastOllamaResponse}
-      </p>
       {(lastOllamaResponse && (
         <>
         <h3>Last Ollama Response </h3>

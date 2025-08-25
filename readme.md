@@ -1,4 +1,4 @@
-# Orca Quick Settings
+# Orca Helper
 
 This program is a simple way to change the settings of the Orca screen reader without entering the Orca GUI. It is meant for quick setting toggles. 
 

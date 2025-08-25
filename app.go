@@ -31,7 +31,7 @@ type App struct {
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{orcaConnection: Connection{}}
+	return &App{orcaConnection: Connection{OrcaClient: nil}}
 }
 
 // startup is called when the app starts. The context is saved
@@ -57,7 +57,9 @@ func (a *App) TryCreateClient() (success bool) {
 		a.orcaConnection.OrcaClient = client
 		_, err := a.orcaConnection.OrcaClient.GetVersion()
 		if err == nil {
-			return true
+			_ = client.SpeechAndVerbosityManager.InterruptSpeech(true)
+			err = client.PresentMessage("Connected to helper")
+			return err == nil
 		} else {
 			a.orcaConnection.ConnectionMessage = err.Error()
 			return false

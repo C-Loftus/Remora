@@ -3,10 +3,8 @@ package main
 import (
 	"context"
 	"embed"
-	"sync/atomic"
 	"time"
 
-	oc "github.com/c-loftus/orca-controller"
 	"github.com/charmbracelet/log"
 	"github.com/ollama/ollama/api"
 	"github.com/wailsapp/wails/v2"
@@ -24,20 +22,20 @@ func handleKeys(app *App) error {
 			return err
 		}
 		// spin off a goroutine for each hotkey listener
-		go func(hk HotkeyWithMetadata, client *oc.OrcaClient) {
+		go func(hk HotkeyWithMetadata, app *App) {
 			log.Info("hotkey registered", "effect", hk.effect, "keys", hk.keysAsString)
 			for range hk.hotkey.Keydown() {
 				if hk.functionToRun != nil {
-					err := hk.functionToRun(client)
+					err := hk.functionToRun(app.orcaConnection.OrcaClient)
 					if err != nil {
-						log.Error(err)
+						log.Errorf("Failed to run hotkey function for %s, got error: %v", hk.effect, err)
 					}
 				}
 			}
-		}(hotkey, app.orcaConnection.OrcaClient)
+		}(hotkey, app)
 	}
 
-	// block forever so goroutines keep running
+	// block forever so goroutines keep running for each hotkey
 	select {}
 }
 
@@ -83,32 +81,18 @@ func main() {
 		log.Errorf("failed to setup ollama: %v", err)
 	}
 
-	// Create an instance of the app structure
 	app := NewApp()
-
-	var clientCreated atomic.Bool
 
 	go func() {
 		for {
-			success := app.TryCreateClient()
-			if success {
-				clientCreated.Store(true)
-			} else {
-				time.Sleep(1 * time.Second)
-			}
+			app.TryCreateClient()
+			time.Sleep(1 * time.Second)
 		}
 	}()
 
 	go func() {
-		for {
-			if clientCreated.Load() {
-				break
-			}
-			time.Sleep(1 * time.Second)
-		}
-		err := handleKeys(app)
-		if err != nil {
-			log.Fatal(err)
+		if err := handleKeys(app); err != nil {
+			log.Error(err)
 		}
 	}()
 

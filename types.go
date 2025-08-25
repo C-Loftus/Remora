@@ -7,6 +7,7 @@ import (
 	"golang.design/x/hotkey"
 )
 
+// A hotkey with the function it will run and a description
 type HotkeyWithMetadata struct {
 	effect        string
 	keysAsString  string

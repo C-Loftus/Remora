@@ -17,6 +17,60 @@ var (
 
 var hotkeyList = []HotkeyWithMetadata{
 	{
+		effect:       "summarize screen",
+		keysAsString: "Ctrl+Shift+F5",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF5),
+		functionToRun: func(client *oc.OrcaClient) error {
+			return client.FlatReviewPresenter.ShowContents(true)
+		},
+	},
+	{
+		effect:       "toggle verbosity",
+		keysAsString: "Ctrl+Shift+F6",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF6),
+		functionToRun: func(client *oc.OrcaClient) error {
+			return client.SpeechAndVerbosityManager.ToggleVerbosity(true)
+		},
+	},
+	{
+		effect:        "describe screen",
+		keysAsString:  "Ctrl+Shift+F7",
+		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF7),
+		functionToRun: takeScreenshotAndSendToLlm,
+	},
+	{
+		effect:       "toggle speech",
+		keysAsString: "Ctrl+Shift+F8",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF8),
+		functionToRun: func(client *oc.OrcaClient) error {
+			err := client.SpeechAndVerbosityManager.InterruptSpeech(true)
+			if err != nil {
+				return err
+			}
+			return client.SpeechAndVerbosityManager.ToggleSpeech(true)
+		},
+	},
+	{
+		effect:       "screen curtain",
+		keysAsString: "Ctrl+Shift+F9",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
+		functionToRun: func(client *oc.OrcaClient) error {
+
+			if screenCurtainEnabled {
+				_ = client.PresentMessage("Disabling screen curtain")
+			} else {
+				_ = client.PresentMessage("Enabling screen curtain")
+			}
+
+			return toggleScreenCurtain()
+		},
+	},
+	{
+		effect:       "change verbosity",
+		keysAsString: "Ctrl+Shift+F10",
+		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF10),
+	},
+	{
 		effect:       "slow speed",
 		keysAsString: "Ctrl+Shift+F11",
 		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF11),
@@ -38,65 +92,6 @@ var hotkeyList = []HotkeyWithMetadata{
 				return err
 			}
 			return client.SpeechAndVerbosityManager.SetRate(100)
-		},
-	},
-	{
-		effect:       "change verbosity",
-		keysAsString: "Ctrl+Shift+F10",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF10),
-	},
-	{
-		effect:       "toggle speech",
-		keysAsString: "Ctrl+Shift+F8",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF8),
-		functionToRun: func(client *oc.OrcaClient) error {
-			err := client.SpeechAndVerbosityManager.InterruptSpeech(true)
-			if err != nil {
-				return err
-			}
-			return client.SpeechAndVerbosityManager.ToggleSpeech(true)
-		},
-	},
-	{
-		effect:        "describe screen",
-		keysAsString:  "Ctrl+Shift+F9",
-		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
-		functionToRun: takeScreenshotAndSendToLlm,
-	},
-	{
-		effect:       "screen curtain",
-		keysAsString: "Ctrl+Shift+F7",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF7),
-		functionToRun: func(client *oc.OrcaClient) error {
-			if screenCurtainEnabled {
-				err := client.PresentMessage("Disabling screen curtain")
-				if err != nil {
-					return err
-				}
-			} else {
-				err := client.PresentMessage("Enabling screen curtain")
-				if err != nil {
-					return err
-				}
-			}
-
-			return toggleScreenCurtain()
-		},
-	},
-	{
-		effect:       "toggle verbosity",
-		keysAsString: "Ctrl+Shift+F6",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF6),
-		functionToRun: func(client *oc.OrcaClient) error {
-			return client.SpeechAndVerbosityManager.ToggleVerbosity(true)
-		},
-	},
-	{
-		effect:       "summarize screen",
-		keysAsString: "Ctrl+Shift+F5",
-		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF5),
-		functionToRun: func(client *oc.OrcaClient) error {
-			return client.FlatReviewPresenter.ShowContents(true)
 		},
 	},
 }

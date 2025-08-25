@@ -9,7 +9,6 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
-	"time"
 
 	oc "github.com/c-loftus/orca-controller"
 	"github.com/jezek/xgb"
@@ -19,8 +18,6 @@ import (
 
 	"github.com/charmbracelet/log"
 )
-
-
 
 // DetectDisplayServer returns "wayland", "x11", or "unknown".
 func DetectDisplayServer() DisplayServerType {
@@ -94,20 +91,6 @@ func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
 		return err
 	}
 	return os.Remove(name)
-}
-
-func createClient() *oc.OrcaClient {
-	for {
-		client, err := oc.NewOrcaClient()
-		_ = client.SpeechAndVerbosityManager.InterruptSpeech(false)
-		err2 := client.PresentMessage("Rotor connected")
-		if err == nil && err2 == nil {
-			log.Info("Orca client created")
-			return client
-		}
-		log.Error("Failed to create Orca client, retrying...")
-		time.Sleep(2 * time.Second)
-	}
 }
 
 func takeScreenshot() (string, error) {
@@ -187,7 +170,6 @@ func createOverlay(X *xgb.Conn) (xproto.Window, error) {
 
 func toggleScreenCurtain() error {
 	if !screenCurtainEnabled {
-		// Enable screen curtain
 		log.Info("Enabling screen curtain")
 
 		brightness, err := getBrightness()
