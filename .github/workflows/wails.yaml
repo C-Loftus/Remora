@@ -1,34 +1,24 @@
 name: Wails build
 
-on:
-  push:
-    tags:
-    # Match any new tag
-      - '*'
-
-env:
-  # Necessary for most environments as build failure can occur due to OOM issues
-  NODE_OPTIONS: "--max-old-space-size=4096"
+on: [push, pull_request]
 
 jobs:
   build:
     strategy:
-    # Failure in one platform build won't impact the others
       fail-fast: false
       matrix:
-        build:
-          - name: 'App'
-            platform:  'linux/amd64'
-            os: 'ubuntu-latest'
-
+        build: [
+          {name: remora, platform: linux/amd64, os: ubuntu-latest},
+          {name: remora, platform: linux/arm64, os: ubuntu-latest},
+        ]
     runs-on: ${{ matrix.build.os }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
+      - uses: actions/checkout@v2
         with:
           submodules: recursive
-
       - uses: dAppServer/wails-build-action@main
         with:
-          build-name: wailsApp
-          build-platform: linux/amd64
+          build-name: ${{ matrix.build.name }}
+          build-platform: ${{ matrix.build.platform }}
+          build-obfuscate: true
+          go-version: 1.24
