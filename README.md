@@ -15,6 +15,7 @@ Download a precompiled binary from Github or [build from source](#building)
 
 ## Limitations: 
 
+- You must use a recent version of Orca (at least v49.0 beta or above); you may need to build from source
 - This app only works on X11; Wayland does not support global hotkeys or coordinates and thus is impossible to support across compositors
 - To use hotkeys you cannot have numlock or another modifier key enabled
 

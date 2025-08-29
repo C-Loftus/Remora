@@ -7,6 +7,7 @@ dev:
 release:
 	git add . 
 	git commit -m "release" || true
+	git push origin main
 	@read -p "Enter tag name: " tag; \
 	read -p "Enter tag message: " msg; \
 	git tag -a $$tag -m "$$msg"; \
