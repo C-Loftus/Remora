@@ -1,6 +1,9 @@
 name: Wails build
 
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - '*'  # Runs on any tag push
 
 jobs:
   build:
