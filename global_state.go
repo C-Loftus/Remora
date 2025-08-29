@@ -27,10 +27,13 @@ var hotkeyList = []HotkeyWithMetadata{
 				return err
 			}
 			ocrResult, err := ocr(screenshot)
+			client.SpeechAndVerbosityManager.InterruptSpeech(false)
 			if err != nil {
+				client.PresentMessage("Error running OCR")
 				mostRecentOcrResponse = err.Error()
 				return err
 			}
+			client.PresentMessage("Finished running OCR")
 			mostRecentOcrResponse = ocrResult
 			return nil
 		},
