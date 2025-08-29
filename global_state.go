@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	oc "github.com/c-loftus/orca-controller"
+	"github.com/charmbracelet/log"
 	"github.com/jezek/xgb"
 	"github.com/jezek/xgb/xproto"
 	"golang.design/x/hotkey"
@@ -22,6 +25,20 @@ var hotkeyList = []HotkeyWithMetadata{
 		keysAsString: "Ctrl+Shift+F5",
 		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF5),
 		functionToRun: func(client *oc.OrcaClient) error {
+
+			defer func() {
+				// the tesseract go bindings are a bit flakey at times
+				// it is best to register this panic handler here so
+				// if something goes wrong, we can present a message
+				// instead of having it crash
+				if r := recover(); r != nil {
+					err := fmt.Errorf("panic in ocr function: %v", r)
+					client.PresentMessage("Unexpected error (panic) while running OCR")
+					mostRecentOcrResponse = err.Error()
+					log.Error(err)
+				}
+			}()
+
 			screenshot, err := takeScreenshot()
 			if err != nil {
 				return err

@@ -21,7 +21,11 @@ jobs:
       - name: Install Tesseract OCR
         run: |
           sudo apt-get update
-          sudo apt-get install -y tesseract-ocr libtesseract-dev
+          sudo apt-get install -y tesseract-ocr libtesseract-dev xvfb libx11-dev
+
+      - name: Initialize a virtual display
+        run: |
+          Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 & export DISPLAY=:99.0
 
       # Build with Wails
       - uses: dAppServer/wails-build-action@main
