@@ -75,7 +75,7 @@ func setupOllama() error {
 
 func main() {
 
-	log.Info("Starting orca-helper. Please note that this program works best on X11 due to the lack of accessibility features in Wayland.")
+	log.Info("Starting remora. Please note that this program works best on X11 due to the lack of accessibility features in Wayland.")
 
 	if err := setupOllama(); err != nil {
 		log.Errorf("failed to setup ollama: %v", err)
@@ -98,7 +98,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "orca-helper",
+		Title:  "remora",
 		Width:  1024,
 		Height: 768,
 		AssetServer: &assetserver.Options{

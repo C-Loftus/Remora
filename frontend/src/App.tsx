@@ -86,7 +86,7 @@ function App() {
 
   return (
     <div id="App">
-      <a href='https://github.com/C-Loftus/orca-helper' target="_blank">
+      <a href='https://github.com/C-Loftus/remora' target="_blank">
             <h1>Orca Helper</h1>
       </a>
       <p className="result">

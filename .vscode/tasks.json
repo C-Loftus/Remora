@@ -15,7 +15,7 @@
                 "-gcflags",
                 "all=-N -l",
                 "-o",
-                "build/bin/orca-helper"
+                "build/bin/remora"
             ]
         }
     ]
