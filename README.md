@@ -11,7 +11,7 @@ Remora swims alongside the Orca screen reader and uses IPC to:
 
 ## Installation
 
-Download a precompiled binary from Github or [build from source](#building)
+Download [the latest release](https://github.com/C-Loftus/Remora/releases/latest) from Github or [build from source](#building)
 
 ## Limitations: 
 
