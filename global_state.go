@@ -43,6 +43,7 @@ var hotkeyList = []HotkeyWithMetadata{
 			if err != nil {
 				return err
 			}
+			log.Info("Running OCR")
 			ocrResult, err := ocr(screenshot)
 			client.SpeechAndVerbosityManager.InterruptSpeech(false)
 			if err != nil {

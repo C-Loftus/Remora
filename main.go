@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"embed"
-	"time"
 
 	"github.com/charmbracelet/log"
 	"github.com/ollama/ollama/api"
@@ -77,24 +76,7 @@ func main() {
 
 	log.Info("Starting remora. Please note that this program works best on X11 due to the lack of accessibility features in Wayland.")
 
-	if err := setupOllama(); err != nil {
-		log.Errorf("failed to setup ollama: %v", err)
-	}
-
 	app := NewApp()
-
-	go func() {
-		for {
-			app.TryCreateClient()
-			time.Sleep(1 * time.Second)
-		}
-	}()
-
-	go func() {
-		if err := handleKeys(app); err != nil {
-			log.Error(err)
-		}
-	}()
 
 	// Create application with options
 	err := wails.Run(&options.App{

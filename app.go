@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"time"
 
 	oc "github.com/c-loftus/orca-controller"
+	"github.com/charmbracelet/log"
 	"github.com/ollama/ollama/api"
 )
 
@@ -38,6 +40,23 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
+
+	if err := setupOllama(); err != nil {
+		log.Errorf("failed to setup ollama: %v", err)
+	}
+
+	go func() {
+		for {
+			a.TryCreateClient()
+			time.Sleep(1 * time.Second)
+		}
+	}()
+
+	go func() {
+		if err := handleKeys(a); err != nil {
+			log.Error(err)
+		}
+	}()
 }
 
 func (a *App) TryCreateClient() (success bool) {
