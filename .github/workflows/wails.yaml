@@ -10,7 +10,7 @@ jobs:
       matrix:
         # {name: remora, platform: linux/arm64, os: ubuntu-latest},
         build: [
-          {name: remora, platform: linux/amd64, os: ubuntu-latest},
+          {name: remora_amd64, platform: linux/amd64, os: ubuntu-latest},
         ]
     runs-on: ${{ matrix.build.os }}
     steps:
