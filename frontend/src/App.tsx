@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { ConnectionStatus, GetDisplayServerType, GetHotKeys, GetModelName, GetPrompt, LastOcrResponse, LastOllamaResponse, OllamaConnectionStatus, SetPrompt } from "../wailsjs/go/main/App";
 import Ollama from './Ollama';
+import { default as remora } from './assets/images/remora.png'
 
 function App() {
   const [connected, setConnected] = useState(false);
@@ -77,6 +78,7 @@ function App() {
 
   return (
     <div id="App">
+      <img src={remora} tabIndex={-1} alt="The Remora Logo; an Orca whale with a fish swimming below it" width="30%" style={{float: 'left', marginRight: '1em'}} />
       <a href='https://github.com/C-Loftus/remora' target="_blank">
         <h1>Remora</h1>
       </a>

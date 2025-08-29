@@ -107,7 +107,7 @@ export default function Ollama() {
             <h2>Ollama</h2>
 
             {processing ? <>
-                <p>Currently Processing <img src={loading} width="20" height="20" alt="Loading" aria-hidden /></p>
+                <p>Currently Processing <img src={loading} width="30" height="30" alt="Loading" aria-hidden /></p>
             </> : (
                 <p className="result">
                     {ollamaStatusMessage === null ? (

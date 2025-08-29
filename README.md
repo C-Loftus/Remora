@@ -1,7 +1,7 @@
 # Remora 
 
 <p align="center">
-  <img src="./docs/remora.png" alt="The Remora Logo; an Orca whale with a fish swimming below it" width="40%"/>
+  <img src="./frontend/src/assets/images/remora.png" alt="The Remora Logo; an Orca whale with a fish swimming below it" width="40%"/>
 </p>
 
 Remora swims alongside the Orca screen reader and uses IPC to:
