@@ -1,5 +1,8 @@
 # Remora 
-<img src="./docs/remora.png" alt="The Remora Logo; an Orca whale with a fish swimming below it" width="300" style="border-radius: 100%; border: 1px solid black; float: right;"/>
+
+<p align="center">
+  <img src="./docs/remora.png" alt="The Remora Logo; an Orca whale with a fish swimming below it" width="40%"/>
+</p>
 
 This program is a simple way to change the settings of the Orca screen reader without entering the Orca GUI. It is meant for quick setting toggles. 
 
