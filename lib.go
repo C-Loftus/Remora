@@ -40,15 +40,31 @@ func DetectDisplayServer() DisplayServerType {
 	}
 }
 
+func SpeakAndLog(client *oc.OrcaClient, text string) error {
+	log.Info(text)
+
+	err := client.SpeechAndVerbosityManager.InterruptSpeech(false)
+	if err != nil {
+		return err
+	}
+	err = client.PresentMessage(text)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
+	if ollamaProcessing.Load() {
+		SpeakAndLog(client, "Currently processing a screenshot")
+		return nil
+	}
+	log.Info("Taking screenshot")
 	name, err := takeScreenshot()
 	if err != nil {
 		return err
 	}
-	err = client.PresentMessage("Screenshot taken")
-	if err != nil {
-		return err
-	}
+
 	ollamaClient, err := api.ClientFromEnvironment()
 	if err != nil {
 		return err
@@ -59,38 +75,38 @@ func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
 		return err
 	}
 
-	messages := api.Message{
-		Role:   "user",
-		Images: []api.ImageData{asBytes},
-	}
-
 	chatReq := api.ChatRequest{
 		Model: "qwen2.5vl",
 		Messages: []api.Message{
-			messages,
+			{
+				Role:   "user",
+				Images: []api.ImageData{asBytes},
+			},
 		},
 	}
+
+	// if the user specified a prompt, use it
+	if visionModelPrompt != "" {
+		chatReq.Messages = append(chatReq.Messages, api.Message{
+			Role:    "user",
+			Content: visionModelPrompt,
+		})
+	}
+
 	var allContent string
 	respFunc := func(resp api.ChatResponse) error {
 		allContent += resp.Message.Content
 		return nil
 	}
-	err = client.PresentMessage("Processing screenshot...")
-	if err != nil {
-		return err
-	}
-	log.Info("Processing screenshot...")
+	SpeakAndLog(client, "Processing screenshot")
+	ollamaProcessing.Store(true)
 	if err := ollamaClient.Chat(context.Background(), &chatReq, respFunc); err != nil {
 		return err
 	}
-	log.Info(allContent)
-
+	ollamaProcessing.Store(false)
 	mostRecentOllamaResponse = allContent
 
-	err = client.PresentMessage(allContent)
-	if err != nil {
-		return err
-	}
+	SpeakAndLog(client, allContent)
 	return os.Remove(name)
 }
 
@@ -181,14 +197,14 @@ func createOverlay(X *xgb.Conn) (xproto.Window, error) {
 }
 
 func toggleScreenCurtain() error {
-	if !screenCurtainEnabled {
+	if !screenCurtainEnabled.Load() {
 		log.Info("Enabling screen curtain")
 
 		brightness, err := getBrightness()
 		if err != nil {
 			return err
 		}
-		savedBrightness = brightness
+		savedBrightness.Store(int64(brightness))
 		if err := setBrightness(0); err != nil {
 			return err
 		}
@@ -204,7 +220,7 @@ func toggleScreenCurtain() error {
 
 		overlayWindow = win
 		xConn = X
-		screenCurtainEnabled = true
+		screenCurtainEnabled.Store(true)
 	} else {
 		// Disable screen curtain
 		log.Info("Disabling screen curtain")
@@ -214,10 +230,10 @@ func toggleScreenCurtain() error {
 			xConn.Close()
 			xConn = nil
 		}
-		if err := setBrightness(savedBrightness); err != nil {
+		if err := setBrightness(int(savedBrightness.Load())); err != nil {
 			return err
 		}
-		screenCurtainEnabled = false
+		screenCurtainEnabled.Store(false)
 	}
 	return nil
 }

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync/atomic"
 
 	oc "github.com/c-loftus/orca-controller"
 	"github.com/charmbracelet/log"
@@ -11,12 +12,15 @@ import (
 )
 
 var (
-	screenCurtainEnabled     bool
-	savedBrightness          int
+	screenCurtainEnabled     atomic.Bool
+	savedBrightness          atomic.Int64
 	overlayWindow            xproto.Window
 	xConn                    *xgb.Conn
 	mostRecentOllamaResponse string
 	mostRecentOcrResponse    string
+	visionModelPrompt        string
+	visionModel              string = "qwen2.5vl:latest"
+	ollamaProcessing         atomic.Bool
 )
 
 var hotkeyList = []HotkeyWithMetadata{
@@ -51,7 +55,7 @@ var hotkeyList = []HotkeyWithMetadata{
 				mostRecentOcrResponse = err.Error()
 				return err
 			}
-			client.PresentMessage("Finished running OCR")
+			SpeakAndLog(client, "Finished running OCR")
 			mostRecentOcrResponse = ocrResult
 			return nil
 		},
@@ -88,10 +92,10 @@ var hotkeyList = []HotkeyWithMetadata{
 		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF9),
 		functionToRun: func(client *oc.OrcaClient) error {
 
-			if screenCurtainEnabled {
-				_ = client.PresentMessage("Disabling screen curtain")
+			if screenCurtainEnabled.Load() {
+				SpeakAndLog(client, "Disabling screen curtain")
 			} else {
-				_ = client.PresentMessage("Enabling screen curtain")
+				SpeakAndLog(client, "Enabling screen curtain")
 			}
 
 			return toggleScreenCurtain()

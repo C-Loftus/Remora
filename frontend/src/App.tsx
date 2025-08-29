@@ -1,16 +1,14 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { ConnectionStatus, GetDisplayServerType, GetHotKeys, LastOcrResponse, LastOllamaResponse, OllamaConnectionStatus } from "../wailsjs/go/main/App";
+import { ConnectionStatus, GetDisplayServerType, GetHotKeys, GetModelName, GetPrompt, LastOcrResponse, LastOllamaResponse, OllamaConnectionStatus, SetPrompt } from "../wailsjs/go/main/App";
+import Ollama from './Ollama';
 
 function App() {
   const [connected, setConnected] = useState(false);
   const [connectedMessage, setConnectedMessage] = useState('');
   const [displayServerType, setDisplayServerType] = useState("unknown");
-  const [ollamaStatusMessage, setOllamaStatusMessage] = useState<string | null>(null);
-  const [lastOllamaResponse, setLastOllamaResponse] = useState<string | null>(null);
   const [lastOcrResponse, setLastOcrResponse] = useState<string | null>(null);
-
-  const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
+  const [hotkeys, setHotkeys] = useState<Array<string>>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -53,28 +51,6 @@ function App() {
       }
 
       try {
-        const ollamaStatusMessage = await OllamaConnectionStatus();
-        if (!isMounted) return;
-        setOllamaStatusMessage(ollamaStatusMessage);
-      } catch (err) {
-        console.error("Error fetching ollama status message:", err);
-        if (isMounted) {
-          setOllamaStatusMessage("");
-        }
-      }
-
-      try {
-        const lastOllamaMessage = await LastOllamaResponse();
-        if (!isMounted) return;
-        setLastOllamaResponse(lastOllamaMessage);
-      } catch (err) {
-        console.error("Error fetching last ollama message:", err);
-        if (isMounted) {
-          setLastOllamaResponse("");
-        }
-      }
-
-      try {
         const lastOcrMessage = await LastOcrResponse();
         if (!isMounted) return;
         setLastOcrResponse(lastOcrMessage);
@@ -84,6 +60,9 @@ function App() {
           setLastOcrResponse("");
         }
       }
+
+
+
     }
 
     fetchStatus();
@@ -99,59 +78,57 @@ function App() {
   return (
     <div id="App">
       <a href='https://github.com/C-Loftus/remora' target="_blank">
-            <h1>Orca Helper</h1>
+        <h1>Remora</h1>
       </a>
       <p className="result">
-        {connected ? 'Connected to Orca' : 'Not connected to Orca'}
-      </p>
-      <p className="result">
+        {connected ? 'Connected to Orca ' : 'Not connected to Orca '}
         {connectedMessage}
       </p>
       <h2> Keyboard Shortcuts </h2>
       {displayServerType === "x11" ? (
-      <table style={{margin: 'auto'}}>
-        <thead>
-          <tr>
-            <th style={{textAlign: 'center'}}>Description</th>
-            <th style={{textAlign: 'center'}}>Key</th>
-          </tr>
-        </thead>
-        <tbody>
-          {hotkeys.map((hotkey) => {
-            const [description, keyName] = hotkey.split(':');
-            return (
-              <tr key={hotkey}>
-                <td style={{textAlign: 'center'}}>{description}</td>
-                <td style={{textAlign: 'center'}}>{keyName}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+        <table style={{ margin: 'auto' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'center' }}>Description</th>
+              <th style={{ textAlign: 'center' }}>Key</th>
+            </tr>
+          </thead>
+          <tbody>
+            {hotkeys.map((hotkey) => {
+              const [description, keyName] = hotkey.split(':');
+              return (
+                <tr key={hotkey}>
+                  <td style={{ textAlign: 'center' }}>{description}</td>
+                  <td style={{ textAlign: 'center' }}>{keyName}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       ) : (
         <p>
           Error: Your system is running Wayland but Wayland does not support global keyboard shortcuts. Please switch to X11 for keyboard shortcuts to work.
         </p>
       )}
-      <h2> Ollama </h2>
-      <p className="result">
-        {
-          (ollamaStatusMessage === null) ? "Not connected; please install Ollama and make sure it is running" : 
-          ollamaStatusMessage
-        }
-      </p>
-      {(lastOllamaResponse && (
-        <>
-        <h3>Last Ollama Response </h3>
-        <p>
-          {lastOllamaResponse}
-        </p>
-        </>
-      ))}
 
-      <h2> OCR </h2>
+      <Ollama />
+
+      <h2 style={{ marginTop: '40px' }}> OCR </h2>
       <p className="result">
-        {lastOcrResponse}
+        {lastOcrResponse ? (
+          <>
+            <button onClick={
+              () => {
+                if (lastOcrResponse) {
+                  navigator.clipboard.writeText(lastOcrResponse)
+                }
+              }
+            } className="btn">Copy to Clipboard</button>
+            <p>
+              {lastOcrResponse}
+            </p>
+          </>
+        ) : "No response yet"}
       </p>
     </div>
   );

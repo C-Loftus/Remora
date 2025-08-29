@@ -26,9 +26,8 @@ func (a *Connection) Reset() {
 
 // App struct
 type App struct {
-	ctx               context.Context
-	visionModelPrompt string
-	orcaConnection    Connection
+	ctx            context.Context
+	orcaConnection Connection
 }
 
 // NewApp creates a new App application struct
@@ -126,11 +125,12 @@ func (a *App) OllamaConnectionStatus() string {
 }
 
 func (a *App) SetPrompt(prompt string) {
-	a.visionModelPrompt = prompt
+	visionModelPrompt = prompt
+	log.Info("Prompt set to: " + prompt)
 }
 
 func (a *App) GetPrompt() string {
-	return a.visionModelPrompt
+	return visionModelPrompt
 }
 
 func (a *App) LastOllamaResponse() string {
@@ -139,4 +139,12 @@ func (a *App) LastOllamaResponse() string {
 
 func (a *App) LastOcrResponse() string {
 	return mostRecentOcrResponse
+}
+
+func (a *App) GetModelName() string {
+	return visionModel
+}
+
+func (a *App) OllamaProcessing() bool {
+	return ollamaProcessing.Load()
 }

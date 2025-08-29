@@ -50,16 +50,16 @@ func setupOllama() error {
 	}
 	var foundQwen bool
 	for _, model := range models.Models {
-		if model.Name == "qwen2.5vl:latest" {
+		if model.Name == visionModel {
 			foundQwen = true
 			break
 		}
 	}
 
 	if !foundQwen {
-		log.Info("qwen2.5vl not found; pulling")
+		log.Infof("%s not found; pulling", visionModel)
 		req := &api.PullRequest{
-			Model: "qwen2.5vl",
+			Model: visionModel,
 		}
 		progressFunc := func(resp api.ProgressResponse) error {
 			log.Info("Progress: status=%v, total=%v, completed=%v\n", resp.Status, resp.Total, resp.Completed)
@@ -68,7 +68,7 @@ func setupOllama() error {
 
 		return ollamaClient.Pull(context.Background(), req, progressFunc)
 	}
-	log.Info("qwen2.5vl vision model found; skipping pull")
+	log.Infof("vision model %s found; skipping pull", visionModel)
 	return nil
 }
 
