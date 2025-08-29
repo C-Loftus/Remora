@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { ConnectionStatus, GetDisplayServerType, GetHotKeys, LastOllamaResponse, OllamaConnectionStatus } from "../wailsjs/go/main/App";
+import { ConnectionStatus, GetDisplayServerType, GetHotKeys, LastOcrResponse, LastOllamaResponse, OllamaConnectionStatus } from "../wailsjs/go/main/App";
 
 function App() {
   const [connected, setConnected] = useState(false);
@@ -8,6 +8,7 @@ function App() {
   const [displayServerType, setDisplayServerType] = useState("unknown");
   const [ollamaStatusMessage, setOllamaStatusMessage] = useState<string | null>(null);
   const [lastOllamaResponse, setLastOllamaResponse] = useState<string | null>(null);
+  const [lastOcrResponse, setLastOcrResponse] = useState<string | null>(null);
 
   const [hotkeys, setHotkeys] = useState<Array<string>>  ([]);
 
@@ -70,6 +71,17 @@ function App() {
         console.error("Error fetching last ollama message:", err);
         if (isMounted) {
           setLastOllamaResponse("");
+        }
+      }
+
+      try {
+        const lastOcrMessage = await LastOcrResponse();
+        if (!isMounted) return;
+        setLastOcrResponse(lastOcrMessage);
+      } catch (err) {
+        console.error("Error fetching last ocr message:", err);
+        if (isMounted) {
+          setLastOcrResponse("");
         }
       }
     }
@@ -136,6 +148,11 @@ function App() {
         </p>
         </>
       ))}
+
+      <h2> OCR </h2>
+      <p className="result">
+        {lastOcrResponse}
+      </p>
     </div>
   );
 }

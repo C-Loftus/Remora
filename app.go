@@ -117,3 +117,7 @@ func (a *App) GetPrompt() string {
 func (a *App) LastOllamaResponse() string {
 	return mostRecentOllamaResponse
 }
+
+func (a *App) LastOcrResponse() string {
+	return mostRecentOcrResponse
+}

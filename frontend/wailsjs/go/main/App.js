@@ -18,6 +18,10 @@ export function GetPrompt() {
   return window['go']['main']['App']['GetPrompt']();
 }
 
+export function LastOcrResponse() {
+  return window['go']['main']['App']['LastOcrResponse']();
+}
+
 export function LastOllamaResponse() {
   return window['go']['main']['App']['LastOllamaResponse']();
 }

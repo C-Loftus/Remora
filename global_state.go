@@ -13,15 +13,26 @@ var (
 	overlayWindow            xproto.Window
 	xConn                    *xgb.Conn
 	mostRecentOllamaResponse string
+	mostRecentOcrResponse    string
 )
 
 var hotkeyList = []HotkeyWithMetadata{
 	{
-		effect:       "summarize screen",
+		effect:       "ocr screen",
 		keysAsString: "Ctrl+Shift+F5",
 		hotkey:       hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF5),
 		functionToRun: func(client *oc.OrcaClient) error {
-			return client.FlatReviewPresenter.ShowContents(true)
+			screenshot, err := takeScreenshot()
+			if err != nil {
+				return err
+			}
+			ocrResult, err := ocr(screenshot)
+			if err != nil {
+				mostRecentOcrResponse = err.Error()
+				return err
+			}
+			mostRecentOcrResponse = ocrResult
+			return nil
 		},
 	},
 	{
@@ -33,7 +44,7 @@ var hotkeyList = []HotkeyWithMetadata{
 		},
 	},
 	{
-		effect:        "describe screen",
+		effect:        "describe screen with local AI model",
 		keysAsString:  "Ctrl+Shift+F7",
 		hotkey:        hotkey.New([]hotkey.Modifier{hotkey.ModCtrl, hotkey.ModShift}, hotkey.KeyF7),
 		functionToRun: takeScreenshotAndSendToLlm,

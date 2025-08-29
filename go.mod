@@ -10,6 +10,7 @@ require (
 	github.com/jezek/xgb v1.1.1
 	github.com/kbinani/screenshot v0.0.0-20250624051815-089614a94018
 	github.com/ollama/ollama v0.11.6
+	github.com/otiai10/gosseract/v2 v2.4.1
 	github.com/wailsapp/wails/v2 v2.10.2
 	golang.design/x/hotkey v0.4.1
 )
@@ -41,7 +42,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/muesli/termenv v0.16.0 // indirect
-	github.com/otiai10/gosseract/v2 v2.4.1 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect

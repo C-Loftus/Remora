@@ -15,6 +15,7 @@ import (
 	"github.com/jezek/xgb/xproto"
 	"github.com/kbinani/screenshot"
 	"github.com/ollama/ollama/api"
+	"github.com/otiai10/gosseract/v2"
 
 	"github.com/charmbracelet/log"
 )
@@ -91,6 +92,17 @@ func takeScreenshotAndSendToLlm(client *oc.OrcaClient) error {
 		return err
 	}
 	return os.Remove(name)
+}
+
+func ocr(imageName string) (string, error) {
+	ocr_client := gosseract.NewClient()
+	defer ocr_client.Close()
+	ocr_client.SetImage(imageName)
+	text, err := ocr_client.Text()
+	if err != nil {
+		return "", err
+	}
+	return text, nil
 }
 
 func takeScreenshot() (string, error) {
