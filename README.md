@@ -7,7 +7,7 @@
 Remora swims alongside the Orca screen reader and uses IPC to:
 - Provide OCR
 - Interact with Ollama Vision Models
-- Control the Orca screen reader with quick settings toggles
+- Provide quick hotkeys for common settings
 
 ## Installation
 
