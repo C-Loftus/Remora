@@ -5,6 +5,8 @@ dev:
 	wails dev -tags webkit2_41 -v 2
 
 release:
+	git add . 
+	git commit -m "release"
 	@read -p "Enter tag name: " tag; \
 	read -p "Enter tag message: " msg; \
 	git tag -a $$tag -m "$$msg"; \
