@@ -19,6 +19,7 @@ Download [the latest release](https://github.com/C-Loftus/Remora/releases/latest
 - This app only works on X11; Wayland does not support global hotkeys or coordinates and thus is impossible to support across compositors
 - To use hotkeys you cannot have numlock or another modifier key enabled
 - Currently supports only amd64
+- You must tab into the GUI window to read its contents with Orca due to [a bug in webkit gtk](https://gitlab.gnome.org/GNOME/orca/-/issues/493)
 
 ## Building
 
