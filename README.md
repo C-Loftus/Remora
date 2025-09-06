@@ -27,4 +27,4 @@ You must have [wails](https://wails.io/docs/gettingstarted/installation) install
 
 ## Screenshot
 
-![A screenshot of the remora application, showing the logo, the title page, an enumeration of keyboard shortcuts, and the ollama input box](./frontend/src/assets/screenshot.png)
+![A screenshot of the remora application, showing the logo, the title page, an enumeration of keyboard shortcuts, ollama output, and ocr](./frontend/src/assets/images/screenshot.png)
