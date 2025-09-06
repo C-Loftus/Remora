@@ -24,3 +24,7 @@ Download [the latest release](https://github.com/C-Loftus/Remora/releases/latest
 ## Building
 
 You must have [wails](https://wails.io/docs/gettingstarted/installation) installed to build this program. Then follow the commands in the [makefile](./makefile)
+
+## Screenshot
+
+![A screenshot of the remora application, showing the logo, the title page, an enumeration of keyboard shortcuts, and the ollama input box](./frontend/src/assets/screenshot.png)
