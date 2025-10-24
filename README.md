@@ -11,7 +11,8 @@ Remora swims alongside the Orca screen reader and uses IPC to:
 
 ## Installation
 
-Download [the latest release](https://github.com/C-Loftus/Remora/releases/latest) from Github or [build from source](#building) 
+- Download [the latest release](https://github.com/C-Loftus/Remora/releases/latest) from Github or [build from source](#building) 
+- To install Remora as a desktop application, you can run `make install` in the makefile.
 
 ## Limitations: 
 

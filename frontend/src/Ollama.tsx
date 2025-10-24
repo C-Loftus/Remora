@@ -121,7 +121,7 @@ export default function Ollama() {
                                     type="text"
                                     value={inputPrompt}
                                     onChange={(e) => setInputPrompt(e.target.value)}
-                                    placeholder="Edit this to change the prompt for Ollama; this will be used for all subsequent OCR runs"
+                                    placeholder="Edit this to change the prompt for Ollama; this will be used for all subsequent AI requests"
                                 />
                                 <button className="btn" type="submit">Set Prompt</button>
                             </form>
