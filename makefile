@@ -13,4 +13,14 @@ release:
 	git tag -a $$tag -m "$$msg"; \
 	git push origin $$tag
 
-.PHONY: build dev release
+# install the binary and its associated .desktop file
+# so it shows up in the applications menu
+install:
+	cp ./remora.desktop ~/.local/share/applications/remora.desktop
+	cp ./frontend/src/assets/images/remora.png ~/.local/share/icons/remora.png
+	wails build -tags webkit2_41 -v 2
+	cp build/bin/remora  ~/.local/bin/remora
+	chmod +x ~/.local/bin/remora
+	update-desktop-database ~/.local/share/applications/
+
+.PHONY: build dev release install

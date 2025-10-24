@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Remora
+GenericName=Orca Helper
+Comment=A helper utility for the Orca screen reader
+Exec=remora
+Icon=remora
+Terminal=false
+Type=Application
+Categories=Utility;Accessibility;Orca
+StartupNotify=true
+Keywords=Orca;Screen Reader;Accessibility;Assistive Technology;
