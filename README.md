@@ -10,7 +10,7 @@ Remora is an application that runs in parallel with the Orca screen reader on Li
 
 A video demonstrating how to use Remora can be found [here](https://www.youtube.com/watch?v=Qh0w-DOH12s)
 
-[![YouTube video for a quick start of Remora](./frontend/src/assets/thumbnail.png)](https://www.youtube.com/watch?v=Qh0w-DOH12s)
+[![The thumbnail of a youtube video demonstrating a quick start of Remora](./frontend/src/assets/thumbnail.png)](https://www.youtube.com/watch?v=Qh0w-DOH12s)
 
 ## Installation
 
