@@ -4,10 +4,17 @@
   <img src="./frontend/src/assets/images/remora.png" alt="The Remora Logo; an Orca whale with a fish swimming below it" width="40%"/>
 </p>
 
-Remora swims alongside the Orca screen reader and uses IPC to:
+Remora integrates with the Orca screen reader and hooks into Orca's APIs to:
+
 - Provide OCR
-- Interact with Ollama Vision Models
+- Interact with private offline ollama vision models
 - Provide quick hotkeys for common settings
+
+## Quickstart Overview Video
+
+A video demonstrating how to use Remora can be found [here](https://www.youtube.com/watch?v=Qh0w-DOH12s)
+
+[![YouTube video for a quick start of Remora](./frontend/src/assets/thumbnail.png)](https://www.youtube.com/watch?v=Qh0w-DOH12s)
 
 ## Installation
 
@@ -25,10 +32,6 @@ Remora swims alongside the Orca screen reader and uses IPC to:
 ## Building
 
 You must have [wails](https://wails.io/docs/gettingstarted/installation) installed to build this program. Then follow the commands in the [makefile](./makefile)
-
-## Video Quick Start
-
-[![YouTube video for a quick start of Remora](./frontend/src/assets/thumbnail.png)](https://www.youtube.com/watch?v=Qh0w-DOH12s)
 
 ## Screenshot
 
