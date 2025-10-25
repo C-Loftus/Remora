@@ -1,14 +1,10 @@
 # Remora 
 
-<p align="center">
-  <img src="./frontend/src/assets/images/remora.png" alt="The Remora Logo; an Orca whale with a fish swimming below it" width="40%"/>
-</p>
+Remora is an application that runs in parallel with the Orca screen reader on Linux and extends Orca's functionality. It provides the ability to:
 
-Remora integrates with the Orca screen reader and hooks into Orca's APIs to:
-
-- Provide OCR
-- Interact with private offline ollama vision models
-- Provide quick hotkeys for common settings
+- Summarize text and visual content with private offline ollama vision models
+- OCR the screen
+- Provide hotkeys for helpful actions not in Orca by default (for example, a screen curtain)
 
 ## Quickstart Overview Video
 
