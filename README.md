@@ -26,6 +26,10 @@ Remora swims alongside the Orca screen reader and uses IPC to:
 
 You must have [wails](https://wails.io/docs/gettingstarted/installation) installed to build this program. Then follow the commands in the [makefile](./makefile)
 
+## Video Quick Start
+
+[![YouTube video for a quick start of Remora](./frontend/src/assets/thumbnail.png)](https://www.youtube.com/watch?v=Qh0w-DOH12s)
+
 ## Screenshot
 
 ![A screenshot of the remora application, showing the logo, the title page, an enumeration of keyboard shortcuts, ollama output, and ocr](./frontend/src/assets/images/screenshot.png)
